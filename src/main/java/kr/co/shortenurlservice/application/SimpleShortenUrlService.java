@@ -27,7 +27,6 @@ public class SimpleShortenUrlService {
     public ShortenUrlCreateResponseDto generateShortenUrl(ShortenUrlCreateRequestDto shortenUrlCreateRequestDto) {
         String originalUrl = shortenUrlCreateRequestDto.getOriginalUrl();
         String shortenUrlKey = getUniqueShortenUrlKey();
-        log.debug("getUniqueShortenUrlKey {}", shortenUrlKey); // 이 부분이 종종 버그를 일으키는 경우
 
         ShortenUrl shortenUrl = new ShortenUrl(originalUrl, shortenUrlKey);
         shortenUrlRepository.saveShortenUrl(shortenUrl);
@@ -81,6 +80,9 @@ public class SimpleShortenUrlService {
 
             if(null == shortenUrl)
                 return shortenUrlKey;
+
+            // 재시도를 하게 되는 곳
+            log.warn("단축 URL 생성 재시도! 재시도 횟수 : {}", count + 1);
         }
 
         throw new LackOfShortenUrlKeyException();
